@@ -91,9 +91,9 @@ class SentimentGenerator:
             if word not in self.widx:
                 textWordsIdx.append(self.vocabsize - 1)
                 print(" not found word = "+word)
-            elif self.widx[word] > self.vocabsize -1:
+            elif self.widx[word] > self.vocabsize - 1:
                 textWordsIdx.append(self.vocabsize - 1)
-                print("rare word = "+ word)
+                print("rare word = " + word)
             else:
                 textWordsIdx.append(self.widx[word])
 
@@ -108,7 +108,7 @@ class SentimentGenerator:
         if sentiment_score > 0.60:
             sentiment = "POSITIVE"
         elif sentiment_score < 0.40:
-            sentiment = "NEGETIVE"
+            sentiment = "NEGATIVE"
         else:
             sentiment = "NEUTRAL"
 
