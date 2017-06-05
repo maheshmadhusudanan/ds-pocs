@@ -1,6 +1,7 @@
 import json
 from pymongo import MongoClient
 from datetime import datetime
+from bson.objectid import ObjectId
 
 class SentimentsDB:
 
@@ -22,6 +23,16 @@ class SentimentsDB:
         result = self.sentiment_collection.insert_one(entry)
         print(" >> record inserted successfully id = "+str(result.inserted_id))
         return str(result.inserted_id)
+
+    def update_record(self, rec_id, record):
+        try:
+            result = self.sentiment_collection.update_one({"_id": ObjectId(rec_id)},
+                                                  {"$set": {"sentiment_manual": record['sentiment_manual']}})
+            # print(" >> record updated successfully id = " + rec_id + " updated results  " + json.dumps(result))
+            return True
+        except Exception as e:
+            print(str(e))
+            return False
 
     def get_records(self, start, limit_size):
         results = []

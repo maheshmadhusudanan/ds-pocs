@@ -9,6 +9,14 @@ st = SentimentGenerator()
 def default():
     return "<html><body><div>Welcome</div></body></html>"
 
+@app.route('/sentiment-cnn/update/<rec_id>', methods=['PUT'])
+def updateSentiment(rec_id):
+    print("received update request for record = "+str(request.get_json(force=True)))
+    resp = st.updateRecord(rec_id, request.get_json(force=True))
+
+    return json.dumps({"success": resp})
+
+
 @app.route('/sentiment-cnn', methods=['POST'])
 def getSentiment():
     print("received form = "+request.form.get('reference_id', ""))

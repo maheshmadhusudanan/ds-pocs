@@ -79,6 +79,10 @@ class SentimentGenerator:
 
         return self.stdb.get_records(start, limit)
 
+    def updateRecord(self, rec_id, record):
+
+        return self.stdb.update_record(rec_id, record)
+
     def runSentiment(self, text, user="", reference_id=""):
         start_time = timeit.default_timer()
         text_clean = re.sub('\W+', ' ', text)
