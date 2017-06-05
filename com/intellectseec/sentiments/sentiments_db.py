@@ -27,9 +27,9 @@ class SentimentsDB:
         results = []
         count = self.sentiment_collection.find({}).count()
         if start > 0:
-            cursor = self.sentiment_collection.find({}).skip(start).limit(limit_size)
+            cursor = self.sentiment_collection.find({}).sort("updated_ts", -1).skip(start).limit(limit_size)
         else:
-            cursor = self.sentiment_collection.find({}).limit(limit_size)
+            cursor = self.sentiment_collection.find({}).sort("updated_ts", -1).limit(limit_size)
         for doc in cursor:
             # print(doc)
             r = {'_id': str(doc.get('_id')),
