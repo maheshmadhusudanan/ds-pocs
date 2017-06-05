@@ -23,9 +23,10 @@ class SentimentGenerator:
     MODEL_PATH = current_dir + "/models/"
     WORDS_TO_IDX_DATA_FILE = DATA_DIR + "/words_to_idx.p"
     IDX_TO_WORD_DATA_FILE = DATA_DIR + "/idx_to_words.p"
-    MODEL_VERSION = "V06-01-17"
+    MODEL_VERSION = "v05-06-17"
     STR_MAX_LEN = 500
-    vocabsize = 60000
+    vocabsize = 50000
+    MODEL_NAME = "model-s" + str(vocabsize) + "-"+MODEL_VERSION + ".h5"
     model = Sequential()
     widx = None
     stdb = SentimentsDB()
@@ -66,14 +67,14 @@ class SentimentGenerator:
         self.model.add(MaxPooling1D())
         self.model.add(Flatten())
         self.model.add(Dense(100, activation='relu'))
-        self.model.add(Dropout(0.7))
+        self.model.add(Dropout(0.9))
         self.model.add(Dense(1, activation='sigmoid'))
         self.model.compile(loss="binary_crossentropy", optimizer=Adam(),  metrics=['accuracy'])
         self.model.summary()
         #
         # load the weights
         #
-        self.model.load_weights(self.MODEL_PATH + 'sentiment_model_v1_0.h5')
+        self.model.load_weights(self.MODEL_PATH + self.MODEL_NAME)
 
     def getAllRecords(self, start, limit):
 
@@ -85,7 +86,8 @@ class SentimentGenerator:
 
     def runSentiment(self, text, user="", reference_id=""):
         start_time = timeit.default_timer()
-        text_clean = re.sub('\W+', ' ', text)
+        # text_clean = re.sub('\W+', ' ', text)
+        text_clean = text
         #
         # split the sentence into words and prepare an index
         #
@@ -105,7 +107,8 @@ class SentimentGenerator:
             if index > 499:
                 status = "EXCEEDED_WORD_LIMIT"
                 break;
-            word = ''.join(c for c in w if c.isalnum())
+
+            word = ''.join(c for c in w if (c.isalnum() or c == "'"))
             if word not in self.widx:
                 textWordsIdx.append(self.vocabsize - 1)
                 print(" not found word = "+word)
@@ -126,7 +129,7 @@ class SentimentGenerator:
         sentiment_score = prediction[0][0]
         if sentiment_score > 0.60:
             sentiment = "POSITIVE"
-        elif sentiment_score < 0.40:
+        elif sentiment_score < 0.50:
             sentiment = "NEGATIVE"
         else:
             sentiment = "NEUTRAL"
