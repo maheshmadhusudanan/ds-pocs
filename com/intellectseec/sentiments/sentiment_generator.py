@@ -10,6 +10,7 @@ import numpy as np
 import os
 import timeit
 from keras.datasets import imdb
+from sentiments_db import SentimentsDB
 
 class SentimentGenerator:
     current_dir = os.getcwd()
@@ -25,6 +26,7 @@ class SentimentGenerator:
     vocabsize = 60000
     model = Sequential()
     widx = None
+    stdb = SentimentsDB()
     #print(DATA_DIR, ORIGINAL_DATA, TRAIN_DATA)
     #vocabsize cannot be changed , the model would have to be regenerated
     #if it needs to be increased
@@ -71,8 +73,12 @@ class SentimentGenerator:
         #
         self.model.load_weights(self.MODEL_PATH + 'sentiment_model_v1_0.h5')
 
+    def getAllRecords(self, start, limit):
 
-    def runSentiment(self,text):
+        return self.stdb.get_records(start, limit)
+
+    def runSentiment(self, text, user=""):
+        start_time = timeit.default_timer()
         #
         # split the sentence into words and prepare an index
         #
@@ -112,13 +118,18 @@ class SentimentGenerator:
         else:
             sentiment = "NEUTRAL"
 
-        # result_json = {
-        #     'status': "SUCCESS",
-        #     'score': str(s),
-        #     'sentiment': t,
-        #     'text': request.form['text'],
-        #     'time_taken': str(round(elapsed, 0)) + ' ms'
-        # }
+        elapsed = (timeit.default_timer() - start_time) * 1000
+        result_json = {
+            'status': "SUCCESS",
+            'user': user,
+            'score': str(sentiment_score),
+            'sentiment': sentiment,
+            'text': text,
+            'time_taken': str(round(elapsed, 0)) + ' ms',
+            'sentiment_manual': ''
+        }
 
-        return sentiment_score, sentiment
+        result_json['_id'] = self.stdb.save_record(result_json)
+
+        return result_json
 
