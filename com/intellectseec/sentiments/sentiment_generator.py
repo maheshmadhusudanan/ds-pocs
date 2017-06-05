@@ -6,6 +6,7 @@ Created on Jun 2, 2017
 import xml.etree.ElementTree as ET
 import utils
 from utils import *
+import re
 import numpy as np
 import os
 import timeit
@@ -22,6 +23,7 @@ class SentimentGenerator:
     MODEL_PATH = current_dir + "/models/"
     WORDS_TO_IDX_DATA_FILE = DATA_DIR + "/words_to_idx.p"
     IDX_TO_WORD_DATA_FILE = DATA_DIR + "/idx_to_words.p"
+    MODEL_VERSION = "V06-01-17"
     STR_MAX_LEN = 500
     vocabsize = 60000
     model = Sequential()
@@ -77,8 +79,9 @@ class SentimentGenerator:
 
         return self.stdb.get_records(start, limit)
 
-    def runSentiment(self, text, user=""):
+    def runSentiment(self, text, user="", reference_id=""):
         start_time = timeit.default_timer()
+        text_clean = re.sub('\W+', ' ', text)
         #
         # split the sentence into words and prepare an index
         #
@@ -88,15 +91,21 @@ class SentimentGenerator:
         # text = "Very nice little place. Prices are reasonable and food was good. Staff is courteous and patient with a non Spanish speaking guy...lol."
         #text = "food was very good , but the service was amazing"
         #text = "The parents of two of the seven cousins killed in that crash have sued the truck's driver and the trucking company"
-        textWordsArray = np.array(text.lower().split())
+        textWordsArray = np.array(text_clean.lower().split())
         #textWordsArray
         textWordsIdx = []
 
-        for w in textWordsArray:
+        status = "SUCCESS"
+        ignored_words = ""
+        for index, w in enumerate(textWordsArray):
+            if index > 499:
+                status = "EXCEEDED_WORD_LIMIT"
+                break;
             word = ''.join(c for c in w if c.isalnum())
             if word not in self.widx:
                 textWordsIdx.append(self.vocabsize - 1)
                 print(" not found word = "+word)
+                ignored_words += word + ", "
             elif self.widx[word] > self.vocabsize - 1:
                 textWordsIdx.append(self.vocabsize - 1)
                 print("rare word = " + word)
@@ -120,13 +129,16 @@ class SentimentGenerator:
 
         elapsed = (timeit.default_timer() - start_time) * 1000
         result_json = {
-            'status': "SUCCESS",
+            'status': status,
             'user': user,
             'score': str(sentiment_score),
             'sentiment': sentiment,
             'text': text,
             'time_taken': str(round(elapsed, 0)) + ' ms',
-            'sentiment_manual': ''
+            'untrained_words': ignored_words,
+            'sentiment_manual': '',
+            'reference_id': reference_id,
+            'model_ver': self.MODEL_VERSION
         }
 
         result_json['_id'] = self.stdb.save_record(result_json)

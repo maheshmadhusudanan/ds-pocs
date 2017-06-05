@@ -40,9 +40,13 @@ class SentimentsDB:
                  'text': doc.get('text'),
                  'updated_ts': str(doc.get('updated_ts')),
                  'time_taken': doc.get('time_taken'),
+                 'untrained_words': doc.get('untrained_words'),
+                 'reference_id': doc.get('reference_id'),
+                 'model_ver': doc.get('model_ver'),
                  'sentiment_manual': doc.get('sentiment_manual')}
+
             results.append(r)
 
-        resp = {'totalCount':count,'results': results}
+        resp = {'totalCount':count, 'results': results}
 
         return resp

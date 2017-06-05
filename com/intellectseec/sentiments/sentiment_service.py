@@ -11,7 +11,10 @@ def default():
 
 @app.route('/sentiment-cnn', methods=['POST'])
 def getSentiment():
-    result_json = st.runSentiment(request.form['text'], request.form['user'])
+    print("received form = "+request.form.get('reference_id', ""))
+    result_json = st.runSentiment(request.form['text'],
+                                  request.form.get('user', ""),
+                                  request.form.get('reference_id', ""))
     # result_json = {
     #     'status': "SUCCESS",
     #     'score': str(s),
