@@ -5,6 +5,7 @@ Created on Jun 2, 2017
 '''
 import xml.etree.ElementTree as ET
 import utils
+import csv
 from utils import *
 import re
 import numpy as np
@@ -15,6 +16,7 @@ from sentiments_db import SentimentsDB
 
 class SentimentGenerator:
     current_dir = os.getcwd()
+    UPLOAD_DIR = current_dir + "/files/"
     DATA_DIR = current_dir + "/data"
     ORIGINAL_DATA = DATA_DIR + "/original"
     TRAIN_DATA = DATA_DIR + "/train"
@@ -83,6 +85,80 @@ class SentimentGenerator:
     def updateRecord(self, rec_id, record):
 
         return self.stdb.update_record(rec_id, record)
+
+    def process_bulk_files(self, filename):
+
+        errors = []
+        try:
+            print("about to open file = "+self.UPLOAD_DIR+filename)
+            generated_sentiments = []
+            with open(self.UPLOAD_DIR+filename, 'r') as f:
+                csvfile = csv.reader(f)
+                firstrow = next(csvfile, None)  # skip header
+                # firstrow = csvfile[0]
+                print("first row text = "+firstrow[2])
+                if firstrow[0] != "GENERATED" or firstrow[1] != "ACTUAL" or firstrow[2] != "TEXT":
+                    errors.append("Invalid excel template! Please use a valid template")
+
+                if len(errors) > 0:
+                    f.close()
+                    os.remove(self.UPLOAD_DIR+filename)
+                    return errors
+
+                deviations = 0
+                total_count = 0
+                for row in csvfile:
+                    if row[2] == 'TEXT':
+                        continue
+                    sentiment_resp = self.runSentiment(row[2], reference_id=filename)
+                    # print(sentiment_resp['sentiment'])
+                    row[0] = sentiment_resp['sentiment']
+                    #
+                    # keep a count of deviations if the sentiment does not matches.
+                    #
+                    deviations += 0 if (row[0] == row[1]) else 1
+                    total_count += 1
+                    generated_sentiments.append(row)
+                    # csvfile.writerow(row)
+                # finally close file
+                f.close()
+
+            #
+            # calculate percent error
+            #
+            accuracy_percentage = ((total_count - deviations) / total_count) * 100
+
+            print("writing csv file")
+            with open(self.UPLOAD_DIR+filename, 'w', newline='') as f:
+                writer = csv.writer(f)
+                #
+                # write down the stats
+                #
+                stats_row = ["TOTAL = ", str(total_count)]
+                writer.writerow(stats_row)
+                stats_row = ["DEVIATIONS = ", str(deviations)]
+                writer.writerow(stats_row)
+                stats_row = [" ACCURACY = ",str(accuracy_percentage) + "%"]
+                writer.writerow(stats_row)
+                header_row = ["GENERATED", "ACTUAL", "TEXT"]
+                writer.writerow(header_row)
+                for row in generated_sentiments:
+                    writer.writerow(row)
+                f.close()
+
+            new_filename = filename.replace("IN-PROGRESS", "COMPLETE")
+            os.rename(self.UPLOAD_DIR+filename, self.UPLOAD_DIR+new_filename)
+            print("renamed the file to "+new_filename)
+            return None
+        except Exception as e:
+            print(str(e))
+            new_filename = filename.replace("IN-PROGRESS", "ERROR")
+            os.rename(self.UPLOAD_DIR + filename, self.UPLOAD_DIR + new_filename)
+            errors.append("some error occurred, please check logs")
+            return errors
+
+
+
 
     def runSentiment(self, text, user="", reference_id=""):
         start_time = timeit.default_timer()
