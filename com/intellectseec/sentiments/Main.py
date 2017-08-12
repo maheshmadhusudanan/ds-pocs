@@ -10,4 +10,4 @@ def default():
     return "<html><body><div>Welcome To Sentiment services. Use APIs to access the features.</div></body></html>"
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=False)

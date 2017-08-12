@@ -14,7 +14,7 @@ import timeit
 from keras.datasets import imdb
 from sentiments_db import SentimentsDB
 
-class SentimentGenerator:
+class SentimentGeneratorContextual:
     current_dir = os.getcwd()
     UPLOAD_DIR = current_dir + "/files/"
     DATA_DIR = current_dir + "/data"

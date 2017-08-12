@@ -11,7 +11,6 @@ sentiment_file_api = Blueprint("sentiment_file_api", __name__)
 st = SentimentGenerator()
 current_dir = os.getcwd()
 UPLOAD_DIR = current_dir + "/files/"
-#UPLOAD_DIR = "C:/Users/Nxxxx/sentiment_temp_dir" + "/files/"
 FILE_DOWN_LOAD_SERVICE = "/sentiment-cnn/file/download/"
 
 @sentiment_file_api.route('/sentiment-cnn/file/upload', methods=['POST'])
