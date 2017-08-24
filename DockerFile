@@ -53,4 +53,4 @@ RUN  conda env create -f /opt/apps/sentiment-analysis-cnn/environment.yml -n ana
 EXPOSE 5000
 
 CMD ["source", "activate", "anacondaenv36"]
-CMD ["python","/opt/apps/sentiment-analysis-cnn/com/intellectseec/sentiments/Main.py"]
+#CMD ["python","/opt/apps/sentiment-analysis-cnn/com/intellectseec/sentiments/Main.py"]
