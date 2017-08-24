@@ -19,7 +19,7 @@ from scipy import misc, ndimage
 from scipy.ndimage.interpolation import zoom
 from scipy.ndimage import imread
 from sklearn.metrics import confusion_matrix
-import bcolz
+#import bcolz
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.manifold import TSNE
 
@@ -176,13 +176,13 @@ def get_data(path, target_size=(224,224)):
     #plt.xlabel('Predicted label')
 
 
-def save_array(fname, arr):
-    c=bcolz.carray(arr, rootdir=fname, mode='w')
-    c.flush()
+#def save_array(fname, arr):
+#    c=bcolz.carray(arr, rootdir=fname, mode='w')
+#    c.flush()
 
 
-def load_array(fname):
-    return bcolz.open(fname)[:]
+#def load_array(fname):
+#    return bcolz.open(fname)[:]
 
 
 def mk_size(img, r2c):

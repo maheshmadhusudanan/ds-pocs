@@ -1,0 +1,56 @@
+#
+#Intellect - Microservices Docker file for intellect text sentiment analysis
+#
+# version  date            Updated By       Description
+#---------------------------------------------------------------------------------------------------------------
+# v1.0     15-Jul-2017     Mahesh M         Initial create, builds a image for intellect sentiment analysis
+#
+FROM frolvlad/alpine-glibc:alpine-3.6
+MAINTAINER Mahesh m <mahesh.m@intellectdesign.com>
+
+ENV CONDA_DIR="/opt/conda"
+ENV PATH="$CONDA_DIR/bin:$PATH"
+
+RUN apk update && \
+    apk upgrade && \
+    apk add bash
+#    apk add --no-cache gcc musl-dev
+
+# Install conda
+RUN CONDA_VERSION="4.3.14" && \
+    CONDA_MD5_CHECKSUM="fc6fc37479e3e3fcf3f9ba52cae98991" && \
+    \
+    apk add --no-cache --virtual=.build-dependencies wget ca-certificates bash && \
+    \
+    mkdir -p "$CONDA_DIR" && \
+    wget "http://repo.continuum.io/miniconda/Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh" -O miniconda.sh && \
+    echo "$CONDA_MD5_CHECKSUM  miniconda.sh" | md5sum -c && \
+    bash miniconda.sh -f -b -p "$CONDA_DIR" && \
+    echo "export PATH=$CONDA_DIR/bin:\$PATH" > /etc/profile.d/conda.sh && \
+    rm miniconda.sh && \
+    \
+    conda update --all --yes && \
+    conda config --set auto_update_conda False && \
+    rm -r "$CONDA_DIR/pkgs/" && \
+    \
+    apk del --purge .build-dependencies && \
+    \
+    mkdir -p "$CONDA_DIR/locks" && \
+    chmod 777 "$CONDA_DIR/locks"
+
+RUN mkdir -p /opt/apps/sentiment-analysis-cnn
+#
+# copy the sentiment analysis python code to apps folder
+#
+ADD . /opt/apps/sentiment-analysis-cnn/
+
+#RUN pip install --upgrade pip && \
+#    pip install ez_setup && \
+#    easy_install -U setuptools && \
+#RUN pip install --upgrade numpy && \
+RUN  conda env create -f /opt/apps/sentiment-analysis-cnn/environment.yml -n anacondaenv36
+
+EXPOSE 5000
+
+CMD ["source", "activate", "anacondaenv36"]
+CMD ["python","/opt/apps/sentiment-analysis-cnn/com/intellectseec/sentiments/Main.py"]

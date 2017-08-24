@@ -2,7 +2,12 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../Object-Detector-App/.idea/Object-Detector-App.iml" filepath="$PROJECT_DIR$/../Object-Detector-App/.idea/Object-Detector-App.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/SentimentAnalysis.iml" filepath="$PROJECT_DIR$/.idea/SentimentAnalysis.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../deduplication_rest/.idea/deduplication_rest.iml" filepath="$PROJECT_DIR$/../deduplication_rest/.idea/deduplication_rest.iml" />
+      <module fileurl="file://C:/MyProjects/deep-learning-toolbox/.idea/deep-learning-toolbox.iml" filepath="C:/MyProjects/deep-learning-toolbox/.idea/deep-learning-toolbox.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../text-sentiment-analysis/.idea/text-sentiment-analysis.iml" filepath="$PROJECT_DIR$/../text-sentiment-analysis/.idea/text-sentiment-analysis.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../video_streaming/.idea/video_streaming.iml" filepath="$PROJECT_DIR$/../video_streaming/.idea/video_streaming.iml" />
     </modules>
   </component>
 </project>
