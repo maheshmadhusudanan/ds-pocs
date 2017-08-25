@@ -5,38 +5,19 @@
 #---------------------------------------------------------------------------------------------------------------
 # v1.0     15-Jul-2017     Mahesh M         Initial create, builds a image for intellect sentiment analysis
 #
-FROM frolvlad/alpine-glibc:alpine-3.6
+FROM centos:centos7
 MAINTAINER Mahesh m <mahesh.m@intellectdesign.com>
 
-ENV CONDA_DIR="/opt/conda"
-ENV PATH="$CONDA_DIR/bin:$PATH"
-
-RUN apk update && \
-    apk upgrade && \
-    apk add bash
-#    apk add --no-cache gcc musl-dev
-
-# Install conda
-RUN CONDA_VERSION="4.3.14" && \
-    CONDA_MD5_CHECKSUM="fc6fc37479e3e3fcf3f9ba52cae98991" && \
-    \
-    apk add --no-cache --virtual=.build-dependencies wget ca-certificates bash && \
-    \
-    mkdir -p "$CONDA_DIR" && \
-    wget "http://repo.continuum.io/miniconda/Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh" -O miniconda.sh && \
-    echo "$CONDA_MD5_CHECKSUM  miniconda.sh" | md5sum -c && \
-    bash miniconda.sh -f -b -p "$CONDA_DIR" && \
-    echo "export PATH=$CONDA_DIR/bin:\$PATH" > /etc/profile.d/conda.sh && \
-    rm miniconda.sh && \
-    \
-    conda update --all --yes && \
-    conda config --set auto_update_conda False && \
-    rm -r "$CONDA_DIR/pkgs/" && \
-    \
-    apk del --purge .build-dependencies && \
-    \
-    mkdir -p "$CONDA_DIR/locks" && \
-    chmod 777 "$CONDA_DIR/locks"
+RUN yum -y update \
+    && yum -y install curl bzip2 \
+    && curl -sSL https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -o /tmp/miniconda.sh \
+    && bash /tmp/miniconda.sh -bfp /usr/local/ \
+    && rm -rf /tmp/miniconda.sh \
+    && conda install -y python=3 \
+    && conda update conda \
+    && conda clean --all \
+    && rpm -e --nodeps curl bzip2 \
+    && yum clean all
 
 RUN mkdir -p /opt/apps/sentiment-analysis-cnn
 #
@@ -44,13 +25,21 @@ RUN mkdir -p /opt/apps/sentiment-analysis-cnn
 #
 ADD . /opt/apps/sentiment-analysis-cnn/
 
-#RUN pip install --upgrade pip && \
-#    pip install ez_setup && \
-#    easy_install -U setuptools && \
-#RUN pip install --upgrade numpy && \
-RUN  conda env create -f /opt/apps/sentiment-analysis-cnn/environment.yml -n anacondaenv36
+RUN pip install flask==0.12.2
+RUN pip install h5py==2.7.0 
+RUN pip install keras==2.0.2
+RUN pip install numpy==1.13.0
+RUN pip install pillow==4.2.1 
+RUN pip install pymongo==3.4.0 
+RUN pip install scikit-learn==0.19.0 
+RUN pip install tensorflow==1.2.1 
+RUN pip install theano==0.9.0 
+RUN pip install pandas==0.20.3
 
 EXPOSE 5000
 
-CMD ["source", "activate", "anacondaenv36"]
-#CMD ["python","/opt/apps/sentiment-analysis-cnn/com/intellectseec/sentiments/Main.py"]
+#RUN conda env create -f /opt/apps/sentiment-analysis-cnn/environment.yml && \
+#CMD ["source", "activate", "anacondaenv36"]
+WORKDIR /opt/apps/sentiment-analysis-cnn/com/intellectseec/sentiments/
+CMD ["python", "Main.py"]
+
