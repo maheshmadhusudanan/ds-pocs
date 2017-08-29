@@ -1,0 +1,10 @@
+flask
+numpy
+pandas
+h5py
+keras
+pillow
+pymongo
+sklearn
+tensorflow
+theano

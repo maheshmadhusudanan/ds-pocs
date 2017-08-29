@@ -5,7 +5,7 @@ from bson.objectid import ObjectId
 
 class SentimentsDB:
 
-    host = "mongodb://mongo-service:27017"
+    host = "mongodb://localhost:27017"
     uid = ""
     pwd = ""
     client = None
@@ -53,6 +53,7 @@ class SentimentsDB:
                  'time_taken': doc.get('time_taken'),
                  'untrained_words': doc.get('untrained_words'),
                  'reference_id': doc.get('reference_id'),
+                 'process_terms': doc.get('process_terms'),
                  'model_ver': doc.get('model_ver'),
                  'sentiment_manual': doc.get('sentiment_manual')}
 
