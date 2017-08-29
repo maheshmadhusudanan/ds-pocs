@@ -9,6 +9,7 @@ from os.path import isfile, join
 import timeit
 sentiment_file_api = Blueprint("sentiment_file_api", __name__)
 st = SentimentGeneratorContextual()
+
 current_dir = os.getcwd()
 UPLOAD_DIR = current_dir + "/files/"
 FILE_DOWN_LOAD_SERVICE = "/sentiment-cnn/file/download/"

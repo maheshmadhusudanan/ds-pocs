@@ -27,7 +27,7 @@ class SentimentGenerator:
     IDX_TO_WORD_DATA_FILE = DATA_DIR + "/idx_to_words.p"
     MODEL_VERSION = "v05-06-17"
     STR_MAX_LEN = 500
-
+    vocabsize = 50000
     MODEL_NAME = "model-s" + str(vocabsize) + "-"+MODEL_VERSION + ".h5"
     model = Sequential()
     widx = None
@@ -169,10 +169,13 @@ class SentimentGenerator:
 
 
 
-    def runSentiment(self, text, user="", reference_id=""):
+    def runSentiment(self, text, user="", process_terms = "", reference_id=""):
         start_time = timeit.default_timer()
         # text_clean = re.sub('\W+', ' ', text)
-        text_clean = text
+        # text_clean = text
+        text_clean = text.lower().strip()
+        text_clean = text_clean.replace(".", " . ")
+        text_clean = text_clean.replace(",", " , ")
         #
         # split the sentence into words and prepare an index
         #
@@ -185,6 +188,15 @@ class SentimentGenerator:
         textWordsArray = np.array(text_clean.lower().split())
         #textWordsArray
         textWordsIdx = []
+
+        print(textWordsArray[:20])
+        p_terms = [x.lower().replace('*', '') for x in process_terms.split(',')]
+        found_process_term = False
+        for pt in p_terms:
+            print("checking pt = "+pt)
+            if pt in text_clean:
+                found_process_term = True
+                break
 
         status = "SUCCESS"
         ignored_words = ""
@@ -212,7 +224,16 @@ class SentimentGenerator:
         #print textIdxArrayPadded
         prediction = self.model.predict(textIdxArrayPadded, batch_size=1,verbose=1)
         sentiment_score = prediction[0][0]
-        if sentiment_score > 0.60:
+
+        #
+        # HACK##
+        # if the process term does not exists then treat the
+        # sentiment as neutral
+        #
+        print ("######### process term = "+process_terms+" found = "+str(found_process_term))
+        if found_process_term == False:
+            sentiment = "NEUTRAL"
+        elif sentiment_score > 0.60:
             sentiment = "POSITIVE"
         elif sentiment_score < 0.50:
             sentiment = "NEGATIVE"
@@ -223,12 +244,14 @@ class SentimentGenerator:
         result_json = {
             'status': status,
             'user': user,
+            'ln': 'en',
             'score': str(sentiment_score),
             'sentiment': sentiment,
             'text': text,
             'time_taken': str(round(elapsed, 0)) + ' ms',
             'untrained_words': ignored_words,
             'sentiment_manual': '',
+            'process_terms': process_terms,
             'reference_id': reference_id,
             'model_ver': self.MODEL_VERSION
         }

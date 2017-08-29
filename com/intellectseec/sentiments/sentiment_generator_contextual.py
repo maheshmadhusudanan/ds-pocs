@@ -23,6 +23,7 @@ import csv
 import timeit
 import flask
 from sentiments_db import SentimentsDB
+from sentiment_generator import SentimentGenerator
 
 class SentimentGeneratorContextual:
     #
@@ -46,6 +47,7 @@ class SentimentGeneratorContextual:
 
     CNN_MODEL = {}
     stdb = SentimentsDB()
+    enSt = SentimentGenerator()
 
     # maximum num of words the sentiment can process
     MAX_WORD_COUNT = 500
@@ -136,7 +138,7 @@ class SentimentGeneratorContextual:
         word_to_idx_list = self.LN_WORDS_TO_IDX[ln]
         #     global missing_most_common_words
         word_idx = []
-        p_terms = [x.lower().replace('*', '') for x in process_terms]
+        p_terms = [x.lower().replace('*', '') for x in process_terms.split(",")]
         text = text.lower().strip()
         text = text.replace(".", " . ")
         text = text.replace(",", " , ")
@@ -147,6 +149,7 @@ class SentimentGeneratorContextual:
         #
         for pt in p_terms:
             try:
+                print(">>> processing pterm = "+pt)
                 text = text.replace(pt, str(vocab_size + 1))
             except UnicodeDecodeError:
                 tx = text.encode('utf-8')
@@ -281,6 +284,9 @@ class SentimentGeneratorContextual:
             print(ex)
             status = "ERROR"
             error_msg = "Error occured while trying to detect the language! Please check the text"
+
+        if detected_ln.lower() == "en":
+            return self.enSt.runSentiment(text, user, process_terms, reference_id)
 
         preds = {}
         try:
