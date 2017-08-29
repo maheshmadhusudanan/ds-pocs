@@ -3,12 +3,12 @@ from time import gmtime, strftime
 import os
 from werkzeug.utils import secure_filename
 import json
-from sentiment_generator import SentimentGenerator
+from sentiment_generator_contextual import SentimentGeneratorContextual
 from os import listdir
 from os.path import isfile, join
 import timeit
 sentiment_file_api = Blueprint("sentiment_file_api", __name__)
-st = SentimentGenerator()
+st = SentimentGeneratorContextual()
 current_dir = os.getcwd()
 UPLOAD_DIR = current_dir + "/files/"
 FILE_DOWN_LOAD_SERVICE = "/sentiment-cnn/file/download/"
@@ -21,6 +21,7 @@ def upload_file():
     user = request.form.get('user', "")
     if file.filename == '':
         return "<p>No File selected</p>"
+
     if file:
         filename = secure_filename(file.filename)
         file_namepart, file_extension = os.path.splitext(file.filename)

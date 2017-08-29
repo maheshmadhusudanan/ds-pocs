@@ -27,7 +27,7 @@ class SentimentGenerator:
     IDX_TO_WORD_DATA_FILE = DATA_DIR + "/idx_to_words.p"
     MODEL_VERSION = "v05-06-17"
     STR_MAX_LEN = 500
-    vocabsize = 50000
+
     MODEL_NAME = "model-s" + str(vocabsize) + "-"+MODEL_VERSION + ".h5"
     model = Sequential()
     widx = None
