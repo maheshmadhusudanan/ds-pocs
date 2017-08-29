@@ -5,7 +5,8 @@ from bson.objectid import ObjectId
 
 class SentimentsDB:
 
-    host = "mongodb://localhost:27017"
+    #host = "mongodb://localhost:27017"
+    host = "mongodb://mongo-service:27017"
     uid = ""
     pwd = ""
     client = None
