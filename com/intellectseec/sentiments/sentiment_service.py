@@ -17,8 +17,8 @@ def updateSentiment(rec_id):
 @sentiment_service_api.route('/sentiment-cnn', methods=['POST'])
 def getSentiment():
     print("....recieved request ...")
-    print("received form = "+request.form.get('reference_id', ""))
     model_type = request.form.get('model_type', "")
+    print("received form = " + request.form.get('reference_id', "")+" type = "+model_type)
 
     if model_type.lower() == "lexicon":
         result_json = st.runSentimentNltk(request.form['text'],
