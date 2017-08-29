@@ -269,21 +269,21 @@ class SentimentGeneratorContextual:
         return sequence.pad_sequences(word_idx, maxlen=self.MAX_WORD_COUNT, value=0)
 
 
-    def runSentiment(self, text, user="", process_terms = "", reference_id=""):
+    def runSentiment(self, text, user="", process_terms = "", reference_id="", ln="en"):
 
         start_time = timeit.default_timer()
 
         error_msg = None
         status = "SUCCESS"
-        detected_ln = 'en'
+        detected_ln = ln
         sentiment = ''
         sentiment_score = 0.0
-        try:
-            detected_ln = detect(text)
-        except Exception as ex:
-            print(ex)
-            status = "ERROR"
-            error_msg = "Error occured while trying to detect the language! Please check the text"
+        # try:
+        #     detected_ln = detect(text)
+        # except Exception as ex:
+        #     print(ex)
+        #     status = "ERROR"
+        #     error_msg = "Error occured while trying to detect the language! Please check the text"
 
         if detected_ln.lower() == "en":
             return self.enSt.runSentiment(text, user, process_terms, reference_id)
@@ -335,21 +335,21 @@ class SentimentGeneratorContextual:
 
         return result_json
 
-    def runSentimentNltk(self, text, user="", process_terms="", reference_id=""):
+    def runSentimentNltk(self, text, user="", process_terms="", reference_id="", ln="en"):
 
         start_time = timeit.default_timer()
 
         error_msg = None
         status = "SUCCESS"
-        detected_ln = 'en'
+        detected_ln = ln
         sentiment = ''
         sentiment_score = 0.0
-        try:
-            detected_ln = detect(text)
-        except Exception as ex:
-            print(ex)
-            status = "ERROR"
-            error_msg = "Error occured while trying to detect the language! Please check the text"
+        # try:
+        #     detected_ln = detect(text)
+        # except Exception as ex:
+        #     print(ex)
+        #     status = "ERROR"
+        #     error_msg = "Error occured while trying to detect the language! Please check the text"
 
         if detected_ln.lower() != 'da':
             status = "ERROR"

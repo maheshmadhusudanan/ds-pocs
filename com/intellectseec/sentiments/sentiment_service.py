@@ -24,12 +24,14 @@ def getSentiment():
         result_json = st.runSentimentNltk(request.form['text'],
                                       request.form.get('user', ""),
                                       request.form.get('process_terms', ""),
-                                      request.form.get('reference_id', ""))
+                                      request.form.get('reference_id', ""),
+                                    request.form.get('ln', "da"))
     else:
         result_json = st.runSentiment(request.form['text'],
                                   request.form.get('user', ""),
                                   request.form.get('process_terms', ""),
-                                  request.form.get('reference_id', ""))
+                                  request.form.get('reference_id', ""),
+                                      request.form.get('ln', "en"))
     # result_json = {
     #     'status': "SUCCESS",
     #     'score': str(s),

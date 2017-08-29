@@ -256,7 +256,9 @@ class SentimentGenerator:
             'model_ver': self.MODEL_VERSION
         }
 
+        json_dump = json.dumps(result_json,ensure_ascii=True)
         result_json['_id'] = self.stdb.save_record(result_json)
+
 
         return result_json
 
