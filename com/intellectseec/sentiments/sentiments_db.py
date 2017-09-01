@@ -2,11 +2,11 @@ import json
 from pymongo import MongoClient
 from datetime import datetime
 from bson.objectid import ObjectId
+import os
 
 class SentimentsDB:
 
-    #host = "mongodb://localhost:27017"
-    host = "mongodb://mongo-service:27017"
+    host = "mongodb://localhost:27017"
     uid = ""
     pwd = ""
     client = None
@@ -15,6 +15,14 @@ class SentimentsDB:
 
     def __init__(self):
         print("############# initializing Mongo DB Client")
+        mongo_host_from_env = os.environ["MONGO_SERVICE_ENV_DOCKERCLOUD_SERVICE_HOSTNAME"]
+        mongo_port_from_env = os.environ["MONGO_SERVICE_1_PORT_27017_TCP_PORT"]
+
+        if not mongo_host_from_env:
+            print("##### Setting mongo default host")
+        else:
+            self.host = mongo_host_from_env + ":" + mongo_port_from_env
+
         self.client = MongoClient(self.host)
         self.db = self.client.sentiment_data_db
         self.sentiment_collection = self.db.sentiment_data_tags
