@@ -7,8 +7,8 @@ import os
 class SentimentsDB:
 
     host = "mongodb://localhost:27017"
-    uid = ""
-    pwd = ""
+    uid = None
+    pwd = None
     client = None
     db = None
     sentiment_collection = None
@@ -17,13 +17,23 @@ class SentimentsDB:
         print("############# initializing Mongo DB Client")
         mongo_host_from_env = os.environ["MONGO_SERVICE_ENV_DOCKERCLOUD_SERVICE_HOSTNAME"]
         mongo_port_from_env = os.environ["MONGO_SERVICE_1_PORT_27017_TCP_PORT"]
+        mongo_uid_from_env = os.environ["MONGO_SERVICE_UID"]
+        mongo_pwd_from_env = os.environ["MONGO_SERVICE_PWD"]
 
         if not mongo_host_from_env:
             print("##### Setting mongo default host")
         else:
             self.host = mongo_host_from_env + ":" + mongo_port_from_env
+            self.uid = mongo_uid_from_env
+            self.pwd = mongo_pwd_from_env
 
+        print("##### mongo host ==== " + self.host)
         self.client = MongoClient(self.host)
+        if self.uid:
+            self.client['admin'].authenticate(self.uid, self.pwd)
+        else:
+            print("##### did not authenticate to mongo!!!!!!!! ")
+            
         self.db = self.client.sentiment_data_db
         self.sentiment_collection = self.db.sentiment_data_tags
 
